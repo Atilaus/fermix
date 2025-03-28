@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FERMIX Explorer</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🦀 FERMIX</h1>
+        <button id="mineBtn">Start Mining</button>
+        <div id="blocks"></div>
+    </div>
+
+    <script>
+        const mineBtn = document.getElementById('mineBtn');
+        const blocksDiv = document.getElementById('blocks');
+
+        async function fetchBlocks() {
+            const response = await fetch('http://localhost:8080/blocks');
+            const blocks = await response.json();
+            blocksDiv.innerHTML = blocks.map(block => `
+                <div class="block">
+                    <p>Block ${block.id}</p>
+                    <p>Hash: <code>${block.hash}</code></p>
+                    <p>Nonce: ${block.nonce}</p>
+                </div>
+            `).join('');
+        }
+
+        mineBtn.addEventListener('click', async () => {
+            await fetch('http://localhost:8080/mine', { method: 'POST' });
+            fetchBlocks();
+        });
+
+        setInterval(fetchBlocks, 3000);
+        fetchBlocks();
+    </script>
+</body>
+</html>
